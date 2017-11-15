@@ -1,0 +1,66 @@
+
+body,h1,h2,h3,h4,h5,h6,p,dl,dd{
+	font-family: "微软雅黑";
+	font-size: 14px;
+	margin: 0;
+	line-height: 1;
+	font-weight: normal;
+	color:#495060;
+}
+
+ul,ol{
+	margin: 0;
+	padding: 0;
+	list-style: none;	
+}
+
+a{
+	text-decoration:none;
+	color:inherit;
+	cursor: pointer;
+}
+
+img{	
+	vertical-align: top;
+	border:0;
+}
+
+input,textarea,fieldset{
+	margin: 0;
+	padding: 0;
+	background: none;
+	border: 0;
+	outline: none;
+	resize: none;
+	vertical-align: top;
+	
+}
+
+em,i{
+	font-style: normal;
+	
+}
+
+strong,b{
+	
+	font-weight: normal;
+}
+
+mark{
+	
+	background: none;
+	color:inherit;
+}
+
+table{
+	
+	border-collapse: collapse;
+}
+
+th,td{
+	padding: 0;
+}
+
+form{
+	margin:0;
+}

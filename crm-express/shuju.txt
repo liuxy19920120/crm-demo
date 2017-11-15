@@ -1,0 +1,57 @@
+// 新建
+information:{
+clientId // 客户编号
+clientName // 客户姓名
+dutyOfficer // 负责人
+dutyOfficerSection // 负责人所在部门 
+clientLevel// 客户级别 
+business// 	行业
+createTime// 创建时间 
+clientStatus// 	状态
+createUser// 创建人
+moveNum// 转手次数
+modifyTime// 最后修改时间
+group// 相关团队
+lockStatus// 	锁定状态
+clinetFrom // 客户来源
+ // 1级行业
+businessLevel2 // 2级行业
+phoneNum // 电话
+fax // 传真businessLevel1
+email // 邮件
+url // 网址
+comment // 备注
+clientType // 客户类型
+businessType// 业务类型
+}
+
+regionLocation:{
+  locationInfo // 定位信息
+  location   // 定位坐标
+  country  // 国家
+  province // 省
+  city // 市
+  area // 区
+  detailLocation// 国家、省、市、区
+   // 详细地址
+}address
+
+
+
+
+
+clientType
+clinetFrom
+businessLevel1
+businessLevel2
+phoneNum
+fax
+email
+url
+comment
+locationInfo
+country
+province
+city
+area
+address
