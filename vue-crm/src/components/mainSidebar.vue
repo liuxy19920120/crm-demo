@@ -6,10 +6,28 @@
                 <router-link to="/test"  icon="plus" class="ivu-btn ivu-btn-primary" exact tag="button">
                     快速新建
                 </router-link>
+                <!-- <div class="createGroup">
+                    <a>
+                        <span class="c"></span>
+                        销售记录
+                    </a>
+                     <a>
+                        <span class="c"></span>
+                        客户
+                    </a>
+                     <a>
+                        <span class="c"></span>
+                        联系人
+                    </a>
+                     <a>
+                        <span class="c"></span>
+                        销售线索
+                    </a>    
+                </div> -->
             </div>
             <ul class="pane-list">
                 <li v-for="(item,index) in tabList01" :key="index" @click="changeItemIndex('01',index)">
-                     <router-link :to="{path:item.itemHref}" :class="{active:tabIndex === '01-'+index}">
+                     <router-link :to="{name:item.itemHref}" :class="{active:tabIndex === '01-'+index}">
                         <Icon :type="item.itemType"></Icon>
                         <span class="text">{{item.itemName}}</span>
                      </router-link>
@@ -19,7 +37,7 @@
         <TabPane icon="ios-pulse">
              <ul class="pane-list">
                 <li v-for="(item,index) in tabList02" :key="index" @click="changeItemIndex('02',index)">
-                     <router-link :to="{path:item.itemHref}" :class="{active:tabIndex === '02-'+index}">
+                     <router-link :to="{name:item.itemHref}" :class="{active:tabIndex === '02-'+index}">
                         <Icon :type="item.itemType"></Icon>
                         <span class="text">{{item.itemName}}</span>
                      </router-link>
@@ -60,19 +78,19 @@ export default {
             {
                itemName:'客户',
                itemType:'person',
-               itemHref:'clientShow'
+               itemHref:'clientShow_index'
             },
             {
                itemName:'联系人',
                itemType:'person-stalker',
-               itemHref:'linkmanShow'
+               itemHref:'linkmanShow_index'
             }
         ],
         tabList02:[
             {
                itemName:'数据看板',
                itemType:'ios-pie',
-               itemHref:'dataShow'
+               itemHref:'salesThreadAnalyze_index'
             }
         ],
         tabIndex:'01-3',
@@ -104,12 +122,46 @@ export default {
   }
   
   .createBtn{
+      position: relative;
       text-align: center;
       margin-bottom: 10px;
+  }
+  .createBtn:hover .createGroup{
+     display:block;
   }
   .createBtn .ivu-btn{
       width: 180px;
       font-size: 14px;
+  }
+  .createBtn .createGroup{
+    display: block;
+    position: absolute;
+    top:0px;
+    left:100px;
+    width: 320px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 2px 12px rgba(0,0,0, 0.2);
+    z-index:1000;
+  }
+  .createBtn .createGroup a{
+      width: 60px;
+      float: left;
+      margin: 10px;
+      text-align: center;
+      color:#666;
+  }
+  .createBtn .createGroup .c{
+      display: block;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      overflow: hidden;
+  }
+  .createBtn .createGroup span:nth-child(1){
+      background: url('../assets/images/d-obj-icon.png') 
   }
 
   .pane-list{

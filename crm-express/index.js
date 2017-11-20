@@ -213,6 +213,23 @@ app.post('/register',function(req,res){
 	 })
 })
 
+// 获取客户列表
+app.post('/getLinkmanList',function(req,res){
+	// 判断是否存在数据
+	let isExist = fs.existsSync('./data/linkmanList.json')
+	let arr = []
+	if(isExist){
+		let data = fs.readFileSync('./data/linkmanList.json')
+		if(data.toString()){
+			arr = JSON.parse(data)
+		}
+	}
+	res.send({
+		code:0,
+		linkmanList:arr
+	})
+})
+
 let host = 'localhost';
 let port = 8888;
 app.listen(port,host,() => {

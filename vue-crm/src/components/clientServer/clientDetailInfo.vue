@@ -62,7 +62,7 @@
                         <li>
                             <div>
                                 <span class="tit">网址</span>
-                               <i class="con">{{selectItem.url}}</i>
+                               <a class="con url" :href="selectItem.url">{{selectItem.url}}</a>
                             </div>
                         </li>
                         <li>
@@ -93,7 +93,7 @@
                         <li>
                             <div>
                                 <span class="tit">定位</span>
-                               <i class="con">{{selectItem.locationInfo}}</i>
+                               <a class="con url" :href="'/dist/mapExpand?location='+encodeURIComponent(selectItem.locationInfo)" target="_blank">{{selectItem.locationInfo}}</a>
                             </div>
                         </li>
                          <li>
@@ -234,6 +234,12 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         color: #444;
+   }
+   .tabInfo ul a.url{
+       color:#57a3f3;
+   }
+   .tabInfo ul a.url:hover{
+       text-decoration: underline;
    }
    .tabInfo .ivu-collapse-content>.ivu-collapse-content-box{
        padding-top: 0px;

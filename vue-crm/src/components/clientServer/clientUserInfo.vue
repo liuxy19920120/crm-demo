@@ -86,7 +86,7 @@ export default {
         this.$emit('rightChange',-900)
       },
       showMap(){
-        window.open('http://localhost:8001/mapExpand?location='+encodeURIComponent(this.selectItem.locationInfo),'_blank')
+        window.open('http://localhost:8080/dist/mapExpand?location='+encodeURIComponent(this.selectItem.locationInfo),'_blank')
 
       }
   }
@@ -111,7 +111,7 @@ export default {
       display: inline-block;
       height: 32px;
       width: 32px;
-      background: url('../../assets/images/d-obj-icon@2x-f2dc4a5396.png') no-repeat;
+      background: url('../../assets/images/d-obj-icon.png') no-repeat;
       margin-right: 10px;
   }
   #infoHead .infoHeadTitle{

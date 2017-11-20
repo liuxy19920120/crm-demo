@@ -111,7 +111,7 @@ export default {
       display: inline-block;
       height: 32px;
       width: 32px;
-      background: url('../../assets/images/d-obj-icon@2x-f2dc4a5396.png') no-repeat;
+      background: url('../../assets/images/d-obj-icon.png') no-repeat;
       margin-right: 10px;
   }
   #infoHead .infoHeadTitle{

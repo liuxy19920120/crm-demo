@@ -12,7 +12,7 @@
                     class="fl dt-sc-box">
                 </Input>
                 <div class="fr dt-right">
-                    <a href="/createNewClient" class="ivu-btn ivu-btn-primary">
+                    <a href="/createNewLinkman" class="ivu-btn ivu-btn-primary">
                     新建
                     </a>
                     <Dropdown placement="bottom-end"  @on-click="tableControl">
@@ -37,7 +37,7 @@
                     <span class="item-tit fl">场景：</span>
                     <Select v-model="sceneValue" style="width:150px">
                         <Option
-                            v-for="item in scene" 
+                        v-for="item in scene" 
                         :value="item.value" 
                         :key="item.value">
                         {{ item.label }}
@@ -67,7 +67,7 @@
        </Row>
        <Row>
         <table-column :selectFlag="tableColumnSelectFlag" :tableColumns="tableColumns" @tableHeadChange="tableHeadChange"></table-column>
-        <Col v-show="listMapFlag" class="clearfix" span="24">
+        <Col class="clearfix" span="24">
             <Col span="24">
                 <div ref="mainList" id="mainList" :style="{height:mainListHeight +'px'}">
                     <div class="selectColumn" title="设置列" @click="tableColumnSelectFlag=!tableColumnSelectFlag">
@@ -78,8 +78,8 @@
                             :show-header="true" 
                             size="default" 
                             :height="mainListHeight"
-                            :data="clientList" 
-                            :columns="clientListHead"
+                            :data="linkmanList" 
+                            :columns="listHead"
                             :loading="tableLoadingFlag"
                             @on-selection-change="selectChange"
                             ref="tableClient"
@@ -89,7 +89,7 @@
             </Col>
             <Col span="24">
                 <div class="main-block">
-                    <Page :total="clientTotalList.length" size="small" show-elevator show-sizer placement="top" @on-change="pageTurn" @on-page-size-change="pageSizeChange"></Page>
+                    <Page :total="linkmanTotalList.length" size="small" show-elevator show-sizer placement="top" @on-change="pageTurn" @on-page-size-change="pageSizeChange"></Page>
                 </div>
             </Col>      
         </Col>  
@@ -107,7 +107,6 @@ import {deepClone} from '../../deepClone.js'
 export default {
   components:{
       tableColumn,
-      clientListMap,
       ClientUserInfo
   },
   data () {
@@ -200,6 +199,10 @@ export default {
             lockStatus:{
                columnName:'锁定状态',
                selectFlag:false
+            },
+            bussinessCard:{
+              columnName:'名片',
+              selectFlag:false
             }
         },
         showCheckbox: true,  // table中是否有CheckBox列
@@ -251,7 +254,7 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispacth('getLinkmanList')
+    this.$store.dispatch('getLinkmanList')
   },
   computed:{
     w:{
@@ -287,7 +290,7 @@ export default {
           this.$store.commit('setLayoutHeight',value)
       }
     },
-    clientListHead:{ //设置表头
+    listHead:{ //设置表头
       get(){
         return this.setTableHead()
       },
@@ -302,10 +305,10 @@ export default {
 
       }
     },
-    clientList:{
+    linkmanList:{
       get(){
-         if(this.clientTotalList.length){
-           return this.clientTotalList.slice((this.pageNum-1)*this.pageSize,this.pageNum*this.pageSize)
+         if(this.linkmanTotalList.length){
+           return this.linkmanTotalList.slice((this.pageNum-1)*this.pageSize,this.pageNum*this.pageSize)
          }else{
            return []
          }
@@ -519,6 +522,16 @@ export default {
           ellipsis: true
         })
       }
+      if(this.tableColumns.bussinessCard.selectFlag){
+        columns.push({
+          width: 120,
+          title: '名片',
+          key: 'bussinessCard',
+          render: (h,params) => {
+            
+          }
+        })
+      }
       columns.push({
         width: 50,
         key: 'action',
@@ -643,10 +656,6 @@ export default {
     background: #f4f6f9;
     padding: 15px;
   } 
-  .clientListMap{
-    overflow: auto;
-    width: 300px;
-  }
   #ListMap{
     height: 100%;
     float: left;

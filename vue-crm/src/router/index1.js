@@ -5,7 +5,6 @@ Vue.use(Router)
 
 let router = new Router({
   mode: 'history',
-  base: '/dist/',
   routes: [
     {
       path: '/',
@@ -14,6 +13,7 @@ let router = new Router({
     {
       path: '/main',
       component: resolve => {require(['../components/main.vue'],resolve)},
+      redirect:'/main/clientShow',
       children:[
         {
           path:'clientShow',
@@ -24,23 +24,6 @@ let router = new Router({
           path:'linkmanShow',
           name:'linkmanShow_index',
           component:resolve => {require(['../components/linkman/mainLinkmanContent.vue'],resolve)}
-        },
-        {
-          path:'dataPaneShow',
-          name:'dataPane_index',
-          component:resolve => {require(['../components/dataPane/mainDataPane.vue'],resolve)},
-          children:[
-            {
-              path:'salesThreadAnalyze',
-              name:'salesThreadAnalyze_index',
-              component:resolve => {require(['../components/dataPane/salesThreadAnalyze.vue'],resolve)}
-            },  
-            {
-              path:'clientAnalyze',
-              name:'clientAnalyze_index',
-              component:resolve => {require(['../components/dataPane/clientAnalyze.vue'],resolve)}
-            }
-          ]
         }
       ]
     },

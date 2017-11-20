@@ -271,7 +271,7 @@ export default {
     },
     mapExpand(ev) {
       if(ev.target.id === 'mapExpand'){
-          window.open('http://localhost:8001/mapExpand?location='+encodeURIComponent(this.formValidate.locationInfo),'_blank')
+          window.open('http://localhost:8080/dist/mapExpand?location='+encodeURIComponent(this.formValidate.locationInfo),'_blank')
       }   
     }
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="clientContent" :style="{width:w+'px'}">
+    <div class="clientContent" :style="{width:layoutWidth+'px'}">
        <Row>
         <Col span="24">
             <div class="crm-tit">
@@ -12,10 +12,10 @@
                     class="fl dt-sc-box">
                 </Input>
                 <div class="fr dt-right">
-                    <a href="/createNewClient" class="ivu-btn ivu-btn-primary">
-                    新建
+                    <a href="/dist/createNewClient" class="ivu-btn ivu-btn-primary">
+                      新建
                     </a>
-                    <Dropdown placement="bottom-end"  @on-click="tableControl">
+                    <Dropdown placement="bottom-end"  @on-click="handelMore">
                         <Button>
                             更多
                             <Icon type="arrow-down-b"></Icon>
@@ -69,12 +69,12 @@
                     <span class="item-tit item-sepcial fl">已选择<i class="checkLen">{{selectLen}}</i>条</span>
                 </li>
                 <li class="noborder" style="margin-left:10px">
-                    <Button>发邮件</Button>
-                    <Button>转移</Button>
-                    <Button>更换负责人</Button>
-                    <Button>作废</Button>
+                    <Button @click="sendEmail">发邮件</Button>
+                    <Button @click="transfer">转移</Button>
+                    <Button @click="changePrincipal">更换负责人</Button>
+                    <Button @click="abolishFlag">作废</Button>
                     <Button @click="addGroupMemberFlag">添加相关团队成员</Button>
-                    <Button>移除相关团队成员</Button>
+                    <Button @click="removeGroupMemberFlag">移除相关团队成员</Button>
                     <Button @click="lockFlag">锁定</Button>
                     <Button @click="unlockFlag">解锁</Button>
                 </li>
@@ -95,7 +95,7 @@
                             size="default" 
                             :height="mainListHeight"
                             :data="clientList" 
-                            :columns="clientListHead"
+                            :columns="listHead"
                             :loading="tableLoadingFlag"
                             @on-selection-change="selectChange"
                             ref="tableClient"
@@ -247,39 +247,40 @@ export default {
                 value: '1',
                 label: '预设数据类型'
             }
-      ],
-      bussinessTypeValue: '0', // 业务类型选中项
-      scene: [ // 场景选项
-        {
-          value: '0',
-          label: '全部'
-        },
-        {
-          value: '1',
-          label: '我负责的客户'
-        },
-        {
-          value: '2',
-          label: '我联合跟进定位客户'
-        },
-        {
-          value: '3',
-          label: '我下属负责的客户'
-        },
-        {
-          value: '4',
-          label: '我下属联合跟进的客户'
-        },
-        {
-          value: '5',
-          label: '我服务的客户'
-        }
-      ],
-      sceneValue: '1',  // 场景选中项
-      selectedClientList:[] // 选中的数据
+        ],
+        bussinessTypeValue: '0', // 业务类型选中项
+        scene: [ // 场景选项
+          {
+            value: '0',
+            label: '全部'
+          },
+          {
+            value: '1',
+            label: '我负责的客户'
+          },
+          {
+            value: '2',
+            label: '我联合跟进定位客户'
+          },
+          {
+            value: '3',
+            label: '我下属负责的客户'
+          },
+          {
+            value: '4',
+            label: '我下属联合跟进的客户'
+          },
+          {
+            value: '5',
+            label: '我服务的客户'
+          }
+        ],
+        sceneValue: '1',  // 场景选中项
+        selectedClientList:[] // 选中的数据
       }
   },
   watch:{
+    // 监控客户列表信息变化，主要是解决从后台取数据需要一定的时间，一开始渲染画面的列表为空
     clientTotalList:{
       deep:true,
       handler(){
@@ -290,15 +291,15 @@ export default {
     }
   },
   computed:{
-    w:{
+    layoutWidth:{ // 容器宽度
       get(){
-         return document.documentElement.clientWidth - 200
+         return this.$store.state.layoutWidth
       },
       set(value){
 
       }
     },
-    layoutHeight:{
+    layoutHeight:{ // 容器高度
       get(){
         return this.$store.state.layoutHeight
       },
@@ -306,7 +307,7 @@ export default {
 
       }
     },
-    checkFlag:{
+    checkFlag:{ // 选中flag
       get(){
         return this.$store.state.checkFlag
       },
@@ -314,40 +315,35 @@ export default {
          this.$store.commit('setCheckFlag',value)
       }
     },
-    // table高度
-    mainListHeight:{
+    mainListHeight:{ // table高度
       get(){
-        return this.$store.state.layoutHeight - 170
+        return this.layoutHeight - 170
       },
       set(value){
-          this.$store.commit('setLayoutHeight',value)
       }
     },
-    // 地图高度
-    listMapHeight:{
+    listMapHeight:{ // 地图高度
       get(){
-          return this.$store.state.layoutHeight - 116
+          return this.layoutHeight - 116
       },
       set(value){
-           this.$store.commit('setLayoutHeight',value)
       }
     },
-    clientListHead:{ //设置表头
+    listHead:{ //设置表头
       get(){
         return this.setTableHead()
       },
       set(value){
       }
     },
-    clientTotalList:{
+    clientTotalList:{ // 所有客户列表信息
       get(){
         return this.$store.state.clientList
       },
       set(){
-
       }
     },
-    clientList:{
+    clientList:{  // 本页显示信息
       get(){
          if(this.clientTotalList.length){
            return this.clientTotalList.slice((this.pageNum-1)*this.pageSize,this.pageNum*this.pageSize)
@@ -364,14 +360,14 @@ export default {
     // 设置表头
     setTableHead (){
       let columns = []
-      if (this.showCheckbox) {
+      if (this.showCheckbox) { // checkBox列
         columns.push({
           type: 'selection',
           width: 60,
           align: 'center'
         })
       }
-      if (this.showIndex) {
+      if (this.showIndex) { // index列
         columns.push({
           type: 'index',
           width: 60,
@@ -379,7 +375,7 @@ export default {
           fixed: 'left'
         })
       }
-      if(this.tableColumns.clientId.selectFlag){                  
+      if(this.tableColumns.clientId.selectFlag){ // 客户编号          
         columns.push({
           width: 150,
           title: '客户编号',
@@ -387,14 +383,14 @@ export default {
           sortable: true
         }) 
       }
-      columns.push({
+      columns.push({ // 客户名称
         width: 120,
         title: '客户名称',
         key: 'clientName',
         sortable: true,
         ellipsis: true
       })
-      if(this.tableColumns.dutyOfficer.selectFlag){
+      if(this.tableColumns.dutyOfficer.selectFlag){ // 负责人
         columns.push({
           width: 120,
           title: '负责人',
@@ -403,7 +399,7 @@ export default {
           ellipsis: true
         })  
       }
-      if(this.tableColumns.dutyOfficerSection.selectFlag){
+      if(this.tableColumns.dutyOfficerSection.selectFlag){ // 负责人所在部门
         columns.push({
           width: 150,
           title: '负责人所在部门',
@@ -412,7 +408,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.clientLevel.selectFlag){
+      if(this.tableColumns.clientLevel.selectFlag){ // 客户级别
         columns.push({
           width: 120,
           title: '客户级别',
@@ -420,7 +416,7 @@ export default {
           sortable: true
         })
       }
-      if(this.tableColumns.clinetFrom.selectFlag){
+      if(this.tableColumns.clinetFrom.selectFlag){ // 来源
         columns.push({
           width: 120,
           title: '来源',
@@ -429,7 +425,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.locationInfo.selectFlag){
+      if(this.tableColumns.locationInfo.selectFlag){ // 国家、省、市、区
         columns.push({
           width: 200,
           title: '国家、省、市、区',
@@ -456,7 +452,7 @@ export default {
         //   }
         })
       }
-      if(this.tableColumns.business.selectFlag){
+      if(this.tableColumns.business.selectFlag){ // 行业
         columns.push({
           width: 120,
           title: '行业',
@@ -482,7 +478,7 @@ export default {
           // }
         })
       }
-      if(this.tableColumns.createTime.selectFlag){      
+      if(this.tableColumns.createTime.selectFlag){ // 创建时间
         columns.push({
           width: 120,
           title: '创建时间',
@@ -491,7 +487,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.clientStatus.selectFlag){            
+      if(this.tableColumns.clientStatus.selectFlag){ // 状态     
         columns.push({
           width: 120,
           title: '状态',
@@ -499,7 +495,7 @@ export default {
           sortable: true
         })
       }
-      if(this.tableColumns.locationInfo.selectFlag){ 
+      if(this.tableColumns.locationInfo.selectFlag){ // 地址  
         columns.push({
           width: 120,
           title: '地址',
@@ -508,7 +504,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.phoneNum.selectFlag){ 
+      if(this.tableColumns.phoneNum.selectFlag){ // 电话
         columns.push({
           width: 120,
           title: '电话',
@@ -517,7 +513,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.comment.selectFlag){       
+      if(this.tableColumns.comment.selectFlag){ // 备注   
         columns.push({
           width: 120,
           title: '备注',
@@ -526,7 +522,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.createUser.selectFlag){     
+      if(this.tableColumns.createUser.selectFlag){ // 创建人   
         columns.push({
           width: 120,
           title: '创建人',
@@ -535,7 +531,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.moveNum.selectFlag){  
+      if(this.tableColumns.moveNum.selectFlag){ // 转手次数   
         columns.push({
           width: 120,
           title: '转手次数',
@@ -543,7 +539,7 @@ export default {
           sortable: true
         })
       }
-      if(this.tableColumns.modifyTime.selectFlag){
+      if(this.tableColumns.modifyTime.selectFlag){ // 最后修改时间  
         columns.push({
           width: 150,
           title: '最后修改时间',
@@ -552,7 +548,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.group.selectFlag){
+      if(this.tableColumns.group.selectFlag){ // 相关团队
         columns.push({
           width: 120,
           title: '相关团队',
@@ -561,7 +557,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.clientType.selectFlag){
+      if(this.tableColumns.clientType.selectFlag){ // 客户类型
         columns.push({
           width: 120,
           title: '客户类型',
@@ -569,7 +565,7 @@ export default {
           sortable: true
         })
       }
-      if(this.tableColumns.fax.selectFlag){
+      if(this.tableColumns.fax.selectFlag){ // 传真
         columns.push({
           width: 120,
           title: '传真',
@@ -578,7 +574,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.url.selectFlag){
+      if(this.tableColumns.url.selectFlag){ // 网址
         columns.push({
           width: 120,
           title: '网址',
@@ -587,7 +583,7 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.email.selectFlag){
+      if(this.tableColumns.email.selectFlag){ // 邮件
         columns.push({
           width: 120,
           title: '邮件',
@@ -595,8 +591,8 @@ export default {
           sortable: true,
           ellipsis: true
         })
-      }
-      if(this.tableColumns.lockStatus.selectFlag){
+      } 
+      if(this.tableColumns.lockStatus.selectFlag){ // 锁定状态
         columns.push({
           width: 120,
           title: '锁定状态',
@@ -604,7 +600,7 @@ export default {
           sortable: true
         })
       }
-      if(this.tableColumns.businessType.selectFlag){
+      if(this.tableColumns.businessType.selectFlag){ // 业务类型
         columns.push({
           width: 120,
           title: '业务类型',
@@ -723,10 +719,7 @@ export default {
           ])
         }
       })
-      // setTimeout(() => {
-      //   this.tableLoadingFlag = false;
         return columns
-      // }, 200);
     },
     // 表头列变化
     tableHeadChange (changeColumn, flag){
@@ -775,6 +768,30 @@ export default {
        this.$store.commit('setCheckFlag',true)
        this.$store.commit('setSelectedDataList',[])
     },
+    // 发邮件
+    sendEmail () {
+      this.$store.commit('setSendEmailFlag',true)
+    },
+    // 转移
+    transfer () {
+       this.$store.commit('setTransferFlag',true)
+    },
+    // 更换负责人
+    changePrincipal () {
+       this.$store.commit('setChangePrincipalFlag',true)
+    },
+    // 废止
+    abolishFlag (){
+      this.$store.commit('setAbolishFlag',true)
+    },
+    // 添加相关团队成员
+    addGroupMemberFlag(){
+      this.$store.commit('setAddGroupMemberFlag',true)
+    },
+    // 删除相关团队成员
+    removeGroupMemberFlag(){
+      this.$store.commit('setRemoveGroupMemberFlag',true)
+    },
     // 锁定
     lockFlag (){
        this.$store.commit('setLockFlag',true)
@@ -782,10 +799,6 @@ export default {
     // 解锁
     unlockFlag (){
       this.$store.commit('setUnlockFlag',true)
-    },
-    // 添加相关团队成员
-    addGroupMemberFlag(){
-      this.$store.commit('setAddGroupMemberFlag',true)
     },
     // 详细信息位置
     rightChange (r){
@@ -796,7 +809,8 @@ export default {
       this.r = 0
       this.selectItem = item
     },
-    tableControl(name){
+    // 单击更多
+    handelMore(name){
      if (name === 'export') {
         this.$router.push('/')
       }

@@ -1,6 +1,6 @@
 <template>
   <Row>
-      <div id="wrap" ref="wrap">
+      <div id="wrap" ref="wrap" :style="{height:layoutHeight+'px'}">
         <Col span="6" id="login">
             <h3 class='loginTitle'>
                 <Icon type="log-in"></Icon>
@@ -39,6 +39,7 @@ export default {
   },
   data () {
     return {
+      layoutHeight:document.documentElement.clientHeight,
       registerShow: false,
       formInline: {
         user: 'admin',
@@ -78,7 +79,7 @@ export default {
 <style>
   #wrap{
       width: 100%;
-      background: url('https://fsdownloadcdn.fxiaoke.com/splash/3ecad2c357.jpg') no-repeat center;
+      background: url('../assets/images/login_bg.jpg') no-repeat center;
       background-size: cover;
       position: relative;
   }

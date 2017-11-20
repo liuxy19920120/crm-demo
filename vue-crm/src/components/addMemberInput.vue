@@ -10,9 +10,10 @@
     </div>
     <div class="selectMemberItem clearfix">
         <div class="selectTips clearfix">
-            <div v-show="!selectMemberTabShow" @click="selectMemberTab">
+             <div v-show="!selectMemberTabShow" @click="selectMemberTab">
                 <i>选择员工</i>
-            </div>
+            </div> 
+            <!-- <Button slot="append" type="text" icon="plus-round" v-show="!selectMemberTabShow" @click="selectMemberTab">选择员工</Button> -->
              <div class="selectMemberTab clearfix" v-show="selectMemberTabShow">
                 <div class="fl selectTabs">
                     <div class="lately" v-show="tabNum === '02'">
@@ -59,6 +60,7 @@ export default {
   props:['showFlag'],
   data () {
       return {
+          selectMemberTabShow:this.showFlag,
           tabNum:'02',
           inputValue:'',
           userList:[
@@ -110,28 +112,23 @@ export default {
           }
       }
   },
-  computed:{
-   selectMemberTabShow:{
-      get(){
+  watch:{
+      showFlag(){
           if(this.showFlag){
-              if(this.selectUserList.length){
-                  this.selectUserList.forEach((item) =>{
-                       for(var i=0;i<this.userList.length;i++){
-                            if(this.userList[i].userName === item.userName){
-                                this.userList[i].activeFlag = false
-                                break
+            if(this.selectUserList.length){
+                    this.selectUserList.forEach((item) =>{
+                        for(var i=0;i<this.userList.length;i++){
+                                if(this.userList[i].userName === item.userName){
+                                    this.userList[i].activeFlag = false
+                                    break
+                                }
                             }
-                        }
-                  })
-              }
-              this.selectUserList = []
+                    })
+                }
+                this.selectUserList = []
+                this.selectMemberTabShow = false
           }
-          return !this.showFlag
-      },
-      set(value){
-         this.showFlag = value
       }
-   }
   },
   mounted () {
     this.userList.forEach((item) => {
@@ -156,7 +153,7 @@ export default {
          }
       },
       selectMemberTab() {
-        this.selectMemberTabShow = false
+        this.selectMemberTabShow = true
         this.setCaretPosition(this.$refs.inputWorkmate,0)
       },
       changeTab(tab){
@@ -249,7 +246,7 @@ export default {
     width: 320px;
     color: #333;
     background:#fff;
-    left: 0px;
+    left: -10px;
     top:32px;
 }
 .selectMemberTab .selectTabs{
