@@ -1,27 +1,27 @@
 <template>
-    <div class="clientContent" :style="{width:w+'px'}">
+    <div class="clientContent" :style="{width:layoutWidth+'px'}">
        <Row>
         <Col span="24">
             <div class="crm-tit">
                 <h2 class="dt-tit">
-                联系人
+                线索池
                 </h2>
                 <Input
-                    placeholder="搜索联系人"
+                    placeholder="搜索姓名"
                     icon="ios-search-strong"
                     class="fl dt-sc-box">
                 </Input>
                 <div class="fr dt-right">
-                    <a href="/createNewLinkman" class="ivu-btn ivu-btn-primary">
-                    新建
+                    <a href="/dist/createNewClient" class="ivu-btn ivu-btn-primary">
+                      新建
                     </a>
-                    <Dropdown placement="bottom-end"  @on-click="tableControl">
+                    <Dropdown placement="bottom-end"  @on-click="handelMore">
                         <Button>
                             更多
                             <Icon type="arrow-down-b"></Icon>
                         </Button>
                         <DropdownMenu slot="list">
-                            <DropdownItem>智能表单</DropdownItem>
+                            <DropdownItem>修改线索池配置</DropdownItem>
                             <DropdownItem>导入</DropdownItem>
                             <DropdownItem name="export">导出</DropdownItem>
                         </DropdownMenu>
@@ -37,7 +37,18 @@
                     <span class="item-tit fl">场景：</span>
                     <Select v-model="sceneValue" style="width:150px">
                         <Option
-                        v-for="item in scene" 
+                            v-for="item in scene" 
+                        :value="item.value" 
+                        :key="item.value">
+                        {{ item.label }}
+                        </Option>
+                    </Select>
+                </li>
+                 <li>
+                    <span class="item-tit fl">线索池：</span>
+                    <Select v-model="threadPoolTypeValue" style="width:150px">
+                        <Option
+                            v-for="item in threadPoolType" 
                         :value="item.value" 
                         :key="item.value">
                         {{ item.label }}
@@ -53,12 +64,12 @@
                     <span class="item-tit item-sepcial fl">已选择<i class="checkLen">{{selectLen}}</i>条</span>
                 </li>
                 <li class="noborder" style="margin-left:10px">
-                    <Button>发邮件</Button>
-                    <Button>转移</Button>
-                    <Button>更换负责人</Button>
-                    <Button>作废</Button>
+                    <Button @click="sendEmail">发邮件</Button>
+                    <Button @click="transfer">转移</Button>
+                    <Button @click="changePrincipal">更换负责人</Button>
+                    <Button @click="abolishFlag">作废</Button>
                     <Button @click="addGroupMemberFlag">添加相关团队成员</Button>
-                    <Button>移除相关团队成员</Button>
+                    <Button @click="removeGroupMemberFlag">移除相关团队成员</Button>
                     <Button @click="lockFlag">锁定</Button>
                     <Button @click="unlockFlag">解锁</Button>
                 </li>
@@ -78,7 +89,7 @@
                             :show-header="true" 
                             size="default" 
                             :height="mainListHeight"
-                            :data="linkmanList" 
+                            :data="threadPoolList" 
                             :columns="listHead"
                             :loading="tableLoadingFlag"
                             @on-selection-change="selectChange"
@@ -89,121 +100,97 @@
             </Col>
             <Col span="24">
                 <div class="main-block">
-                    <Page :total="linkmanTotalList.length" size="small" show-elevator show-sizer placement="top" @on-change="pageTurn" @on-page-size-change="pageSizeChange"></Page>
+                    <Page :total="threadPoolTotalList.length" size="small" show-elevator show-sizer placement="top" @on-change="pageTurn" @on-page-size-change="pageSizeChange"></Page>
                 </div>
             </Col>      
-        </Col>  
+        </Col> 
        </Row>
         <Row class="clientInfoMain" :style="{right:r+'px'}">
-            <linkman-info @rightChange="rightChange" :selectItem="selectItem"></linkman-info>
+            <thread-pool-user-info @rightChange="rightChange" :selectItem="selectItem"></thread-pool-user-info>
         </Row>
    </div>  
 </template>
 
 <script>
 import tableColumn from '@/components/tableColumn'
-import LinkmanInfo from '@/components/linkman/linkmanInfo'
+import ThreadPoolUserInfo from '@/components/threadPool/threadPoolUserInfo'
 import {deepClone} from '../../deepClone.js'
 export default {
   components:{
       tableColumn,
-      LinkmanInfo
+      ThreadPoolUserInfo
   },
   data () {
       return {
         tableColumns:{  // 所有表头项
-            linmanName:{
-              columnName:'客户名称',
+            clientName:{
+              columnName:'姓名',
               selectFlag:true
             },
-            linkmanCompanyName:{
-               columnName:'公司名称',
-               selectFlag:true
+            clientCompany:{
+              columnName:'公司',
+              selectFlag:true
             },
-            linkmanBranch:{
-               columnName:'部门',
-               selectFlag:true
+            dutyOfficer:{
+              columnName:'负责人',
+              selectFlag:true
             },
-            linkmanDuty:{
-               columnName:'职务',
-               selectFlag:true
-            },
-            linkmanMobilePhoneNum:{
-               columnName:'手机',
-               selectFlag:true
-            },
-            linkmanPhoneNum:{
-               columnName:'电话',
-               selectFlag:true
-            },
-            linkmanEmail:{
-               columnName:'邮件',
-               selectFlag:true
-            },
-            policyMaker:{
-               columnName:'关键决策人',
-               selectFlag:true
-            },
-            linkmanSex:{
-               columnName:'性别',
-               selectFlag:true
-            },
-            principal:{
-               columnName:'负责人',
-               selectFlag:true
-            },
-            principalBranch:{
+            dutyOfficerSection:{
                columnName:'负责人所在部门',
                selectFlag:true
             },
-            linkmanBirth:{
-               columnName:'生日',
-               selectFlag:false
+            clientStatus:{
+               columnName:'状态',
+               selectFlag:true
             },
-            linkmanAddress:{
-               columnName:'地址',
-               selectFlag:false
+            saleThreadDetail:{
+               columnName:'销售线索详情',
+               selectFlag:true
             },
-            commit:{
-               columnName:'备注',
-               selectFlag:false
+            threadPool:{
+               columnName:'线索池',
+               selectFlag:true
             },
             createUser:{
                columnName:'创建人',
-               selectFlag:false
-            },
-            createTime:{
-               columnName:'创建时间',
-               selectFlag:false
-            },
-            modifyTime:{
-               columnName:'最后修改时间',
-               selectFlag:false
-            },
-            modifyUser:{
-              columnName:'最后修改人',
-               selectFlag:false
-            },
-            status:{
-               columnName:'状态',
-               selectFlag:false
-            },
-            relativeGroup:{
-               columnName:'相关团队',
                selectFlag:true
             },
-            introducer:{
-               columnName:'介绍人',
+             createTime:{
+               columnName:'创建时间',
+               selectFlag:true
+            },
+            clinetFrom:{
+               columnName:'来源',
+               selectFlag:true
+            },
+            branch:{
+               columnName:'部门',
+               selectFlag:false
+            },
+            phoneNum:{
+               columnName:'电话',
+               selectFlag:true
+            },
+            mobilePhoneNum:{
+               columnName:'手机',
+               selectFlag:false
+            },
+            address:{
+               columnName:'地址',
+               selectFlag:true
+            },
+            url:{
+               columnName:'网址',
+               selectFlag:true
+            },
+              email:{
+               columnName:'邮件',
                selectFlag:true
             },
             lockStatus:{
                columnName:'锁定状态',
-               selectFlag:false
+               selectFlag:true
             },
-            bussinessCard:{
-              columnName:'名片',
-              selectFlag:false
-            }
         },
         showCheckbox: true,  // table中是否有CheckBox列
         tableLoadingFlag:false, // 表格加载中、
@@ -213,60 +200,60 @@ export default {
         pageSize:10,  // 初始每页条数
         r:-900, // 详情页面定位
         selectItem:{}, // 当前点击table行
-      scene: [ // 场景选项
-        {
-          value: '0',
-          label: '全部'
-        },
-        {
-          value: '1',
-          label: '我负责的客户'
-        },
-        {
-          value: '2',
-          label: '我联合跟进定位客户'
-        },
-        {
-          value: '3',
-          label: '我下属负责的客户'
-        },
-        {
-          value: '4',
-          label: '我下属联合跟进的客户'
-        },
-        {
-          value: '5',
-          label: '我服务的客户'
-        }
-      ],
-      sceneValue: '1',  // 场景选中项
-      selectedClientList:[] // 选中的数据
+        threadPoolType: [  // 线索池选项
+            {
+                value: '0',
+                label: '销售线索池'
+            }
+        ],
+        threadPoolTypeValue: '0', // 线索池选中项
+        scene: [ // 场景选项
+          {
+            value: '0',
+            label: '全部销售线索'
+          },
+          {
+            value: '1',
+            label: '未分配的销售线索'
+          },
+          {
+            value: '2',
+            label: '已分配的销售线索'
+          },
+          {
+            value: '3',
+            label: '超时的销售线索'
+          }
+        ],
+        sceneValue: '0',  // 场景选中项
+        selectedClientList:[] // 选中的数据
       }
   },
   watch:{
-    LinkmanTotalList:{
+    // 监控列表信息变化，主要是解决从后台取数据需要一定的时间，一开始渲染画面的列表为空
+    threadPoolTotalList:{
       deep:true,
       handler(){
-         if(this.LinkmanTotalList.length){
-           this.LinkmanList = this.LinkmanTotalList.slice((this.pageNum-1)*this.pageSize,this.pageNum*this.pageSize)
+         if(this.threadPoolTotalList.length){
+           this.threadPoolList = this.threadPoolTotalList.slice((this.pageNum-1)*this.pageSize,this.pageNum*this.pageSize)
          }
       }
     }
   },
   mounted () {
-    this.$store.dispatch('getLinkmanList')
     this.$store.commit('setCheckFlag',true)
+    this.$store.dispatch('getThreadPoolList')
   },
   computed:{
-    w:{
+    layoutWidth:{ // 容器宽度
       get(){
-         return document.documentElement.clientWidth - 200
+         return this.$store.state.layoutWidth
       },
       set(value){
 
       }
     },
-    layoutHeight:{
+    layoutHeight:{ // 容器高度
       get(){
         return this.$store.state.layoutHeight
       },
@@ -274,7 +261,7 @@ export default {
 
       }
     },
-    checkFlag:{
+    checkFlag:{ // 选中flag
       get(){
         return this.$store.state.checkFlag
       },
@@ -282,13 +269,11 @@ export default {
          this.$store.commit('setCheckFlag',value)
       }
     },
-    // table高度
-    mainListHeight:{
+    mainListHeight:{ // table高度
       get(){
-        return this.$store.state.layoutHeight - 170
+        return this.layoutHeight - 170
       },
       set(value){
-          this.$store.commit('setLayoutHeight',value)
       }
     },
     listHead:{ //设置表头
@@ -298,18 +283,17 @@ export default {
       set(value){
       }
     },
-    linkmanTotalList:{
+    threadPoolTotalList:{ // 所有客户列表信息
       get(){
-        return this.$store.state.linkmanList
+        return this.$store.state.threadPoolList
       },
       set(){
-
       }
     },
-    linkmanList:{
+    threadPoolList:{  // 本页显示信息
       get(){
-         if(this.linkmanTotalList.length){
-           return this.linkmanTotalList.slice((this.pageNum-1)*this.pageSize,this.pageNum*this.pageSize)
+         if(this.threadPoolTotalList.length){
+           return this.threadPoolTotalList.slice((this.pageNum-1)*this.pageSize,this.pageNum*this.pageSize)
          }else{
            return []
          }
@@ -323,14 +307,14 @@ export default {
     // 设置表头
     setTableHead (){
       let columns = []
-      if (this.showCheckbox) {
+      if (this.showCheckbox) { // checkBox列
         columns.push({
           type: 'selection',
           width: 60,
           align: 'center'
         })
       }
-      if (this.showIndex) {
+      if (this.showIndex) { // index列
         columns.push({
           type: 'index',
           width: 60,
@@ -338,132 +322,75 @@ export default {
           fixed: 'left'
         })
       }
-      if(this.tableColumns.linmanName.selectFlag){                  
+      if(this.tableColumns.clientName.selectFlag){ // 客户姓名         
         columns.push({
           width: 150,
-          title: '客户名称',
-          key: 'linmanName',
+          title: '姓名',
+          key: 'clientName',
           sortable: true
         }) 
       }
-      if(this.tableColumns.linkmanCompanyName.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '客户公司',
-          key: 'linkmanCompanyName',
-          sortable: true
-        }) 
-      }
-      if(this.tableColumns.linkmanBranch.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '部门',
-          key: 'linkmanBranch',
-          sortable: true
-        }) 
-      }
-      if(this.tableColumns.linkmanDuty.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '职务',
-          key: 'linkmanDuty',
-          sortable: true
-        }) 
-      }
-      if(this.tableColumns.linkmanMobilePhoneNum.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '手机',
-          key: 'linkmanMobilePhoneNum',
-          sortable: true
-        }) 
-      }
-       if(this.tableColumns.linkmanPhoneNum.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '电话',
-          key: 'linkmanPhoneNum',
-          sortable: true
-        }) 
-      }
-      if(this.tableColumns.linkmanEmail.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '邮件',
-          key: 'linkmanEmail',
-          sortable: true
-        }) 
-      }
-      if(this.tableColumns.policyMaker.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '关键决策人',
-          key: 'policyMaker',
-          sortable: true
-        }) 
-      }
-      if(this.tableColumns.linkmanSex.selectFlag){                  
-        columns.push({
-          width: 150,
-          title: '性别',
-          key: 'linkmanSex',
-          sortable: true
-        }) 
-      }
-      if(this.tableColumns.principal.selectFlag){
+       if(this.tableColumns.clientCompany.selectFlag){ // 公司     
+        columns.push({ // 客户名称
+          width: 120,
+          title: '公司',
+          key: 'clientCompany',
+          sortable: true,
+          ellipsis: true
+        })
+       }
+      if(this.tableColumns.dutyOfficer.selectFlag){ // 负责人
         columns.push({
           width: 120,
           title: '负责人',
-          key: 'principal',
+          key: 'dutyOfficer',
           sortable: true,
           ellipsis: true
         })  
       }
-      if(this.tableColumns.principalBranch.selectFlag){
+      if(this.tableColumns.dutyOfficerSection.selectFlag){ // 负责人所在部门
         columns.push({
           width: 150,
           title: '负责人所在部门',
-          key: 'principalBranch',
+          key: 'dutyOfficerSection',
           sortable: true,
           ellipsis: true
         })
       }
-      if(this.tableColumns.linkmanBirth.selectFlag){
+      if(this.tableColumns.clientStatus.selectFlag){ // 状态     
         columns.push({
           width: 120,
-          title: '生日',
-          key: 'linkmanBirth',
+          title: '状态',
+          key: 'clientStatus',
           sortable: true
         })
       }
-      if(this.tableColumns.linkmanAddress.selectFlag){
+      if(this.tableColumns.saleThreadDetail.selectFlag){ // 销售线索详情     
         columns.push({
           width: 120,
-          title: '地址',
-          key: 'linkmanAddress',
-          sortable: true,
-          ellipsis: true
+          title: '销售线索详情',
+          key: 'saleThreadDetail',
+          sortable: true
         })
       }
-      if(this.tableColumns.commit.selectFlag){
+      if(this.tableColumns.threadPool.selectFlag){ // 线索池    
         columns.push({
-          width: 200,
-          title: '备注',
-          key: 'commit',
-          sortable: true,
-          ellipsis: true
+          width: 120,
+          title: '线索池',
+          key: 'threadPool',
+          sortable: true
         })
       }
-      if(this.tableColumns.createUser.selectFlag){
+      if(this.tableColumns.createUser.selectFlag){ // 创建人   
         columns.push({
           width: 120,
           title: '创建人',
-          sortable: true,
           key: 'createUser',
+          sortable: true,
           ellipsis: true
         })
       }
-      if(this.tableColumns.createTime.selectFlag){      
+      if(this.tableColumns.createTime.selectFlag){ // 创建时间
         columns.push({
           width: 120,
           title: '创建时间',
@@ -472,65 +399,75 @@ export default {
           ellipsis: true
         })
       }
-      if(this.tableColumns.modifyTime.selectFlag){            
+      if(this.tableColumns.clinetFrom.selectFlag){ // 来源
         columns.push({
           width: 120,
-          title: '最后修改时间',
-          key: 'modifyTime',
-          sortable: true
-        })
-      }
-      if(this.tableColumns.modifyUser.selectFlag){            
-        columns.push({
-          width: 120,
-          title: '最后修改人',
-          key: 'modifyUser',
-          sortable: true
-        })
-      }
-      if(this.tableColumns.status.selectFlag){            
-        columns.push({
-          width: 120,
-          title: '状态',
-          key: 'status',
-          sortable: true
-        })
-      }
-      if(this.tableColumns.relativeGroup.selectFlag){ 
-        columns.push({
-          width: 120,
-          title: '相关团队',
-          key: 'relativeGroup',
+          title: '来源',
+          key: 'clinetFrom',
           sortable: true,
           ellipsis: true
         })
       }
-      if(this.tableColumns.introducer.selectFlag){ 
+      if(this.tableColumns.branch.selectFlag){ // 部门  
         columns.push({
           width: 120,
-          title: '介绍人',
-          key: 'introducer',
+          title: '部门',
+          key: 'branch',
           sortable: true,
           ellipsis: true
         })
       }
-      if(this.tableColumns.lockStatus.selectFlag){       
+      if(this.tableColumns.phoneNum.selectFlag){ // 电话
+        columns.push({
+          width: 120,
+          title: '电话',
+          key: 'phoneNum',
+          sortable: true,
+          ellipsis: true
+        })
+      }
+      if(this.tableColumns.mobilePhoneNum.selectFlag){ // 手机   
+        columns.push({
+          width: 120,
+          title: '手机',
+          key: 'mobilePhoneNum',
+          sortable: true,
+          ellipsis: true
+        })
+      }
+      if(this.tableColumns.address.selectFlag){ // 地址   
+        columns.push({
+          width: 120,
+          title: '地址',
+          key: 'address',
+          sortable: true,
+          ellipsis: true
+        })
+      }
+      if(this.tableColumns.url.selectFlag){ // 网址
+        columns.push({
+          width: 120,
+          title: '网址',
+          key: 'url',
+          sortable: true,
+          ellipsis: true
+        })
+      }
+      if(this.tableColumns.email.selectFlag){ // 邮件
+        columns.push({
+          width: 120,
+          title: '邮件',
+          key: 'email',
+          sortable: true,
+          ellipsis: true
+        })
+      } 
+      if(this.tableColumns.lockStatus.selectFlag){ // 锁定状态
         columns.push({
           width: 120,
           title: '锁定状态',
           key: 'lockStatus',
-          sortable: true,
-          ellipsis: true
-        })
-      }
-      if(this.tableColumns.bussinessCard.selectFlag){
-        columns.push({
-          width: 120,
-          title: '名片',
-          key: 'bussinessCard',
-          render: (h,params) => {
-            
-          }
+          sortable: true
         })
       }
       columns.push({
@@ -583,6 +520,30 @@ export default {
        this.$store.commit('setCheckFlag',true)
        this.$store.commit('setSelectedDataList',[])
     },
+    // 发邮件
+    sendEmail () {
+      this.$store.commit('setSendEmailFlag',true)
+    },
+    // 转移
+    transfer () {
+       this.$store.commit('setTransferFlag',true)
+    },
+    // 更换负责人
+    changePrincipal () {
+       this.$store.commit('setChangePrincipalFlag',true)
+    },
+    // 废止
+    abolishFlag (){
+      this.$store.commit('setAbolishFlag',true)
+    },
+    // 添加相关团队成员
+    addGroupMemberFlag(){
+      this.$store.commit('setAddGroupMemberFlag',true)
+    },
+    // 删除相关团队成员
+    removeGroupMemberFlag(){
+      this.$store.commit('setRemoveGroupMemberFlag',true)
+    },
     // 锁定
     lockFlag (){
        this.$store.commit('setLockFlag',true)
@@ -590,10 +551,6 @@ export default {
     // 解锁
     unlockFlag (){
       this.$store.commit('setUnlockFlag',true)
-    },
-    // 添加相关团队成员
-    addGroupMemberFlag(){
-      this.$store.commit('setAddGroupMemberFlag',true)
     },
     // 详细信息位置
     rightChange (r){
@@ -604,7 +561,8 @@ export default {
       this.r = 0
       this.selectItem = item
     },
-    tableControl(name){
+    // 单击更多
+    handelMore(name){
      if (name === 'export') {
         this.$router.push('/')
       }
@@ -657,6 +615,10 @@ export default {
     background: #f4f6f9;
     padding: 15px;
   } 
+  .clientListMap{
+    overflow: auto;
+    width: 300px;
+  }
   #ListMap{
     height: 100%;
     float: left;

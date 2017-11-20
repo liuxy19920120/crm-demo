@@ -7,6 +7,8 @@ Vue.use(Vuex)
 let store = new Vuex.Store({
   state: {
     address: 'http://localhost:8888', // 后台接口访问地址
+    saleThreadList:[], // 销售线索客户列表
+    threadPoolList:[], // 线索池客户列表
     clientList: [], // 客户列表
     linkmanList:[], // 联系人列表
     layoutHeight:'', // 内容高度
@@ -71,6 +73,32 @@ let store = new Vuex.Store({
     setSelectedDataList(state,payLoad){
       this.state.selectedDataList = payLoad
     },
+    // 设置销售线索客户列表
+    setSaleThreadList (state, payLoad) {
+      let list = payLoad.data.saleThreadList
+      let newList = []
+      if(list.length){
+        newList = Array.from(list).map(function(item){
+          item.clientStatus = item.clientStatus === '0' ? '已分配':'未分配'
+          item.lockStatus = item.lockStatus === '0' ? '未锁定':'已锁定'
+          return item
+        })
+      }
+      this.state.saleThreadList = newList
+    },
+    // 设置线索池客户列表
+    setClientList (state, payLoad) {
+      let list = payLoad.data.threadPoolList
+      let newList = []
+      if(list.length){
+        newList = Array.from(list).map(function(item){
+          item.clientStatus = item.clientStatus === '0' ? '已分配':'未分配'
+          item.lockStatus = item.lockStatus === '0' ? '未锁定':'已锁定'
+          return item
+        })
+      }
+      this.state.threadPoolList = newList
+    },
     // 设置客户列表
     setClientList (state, payLoad) {
       let list = payLoad.data.clientList
@@ -99,6 +127,20 @@ let store = new Vuex.Store({
     }
   },
   actions: {
+    // 和后台数据接口交互取得销售线索客户列表信息
+    getSaleThreadList (context) {
+      Axios.post(this.state.address + '/getSaleThreadList')
+      .then((data) => {
+        context.commit('setSaleThreadList', data)
+      })
+    },
+     // 和后台数据接口交互取得线索池客户列表信息
+    getThreadPoolList (context) {
+      Axios.post(this.state.address + '/getThreadPoolList')
+      .then((data) => {
+        context.commit('setThreadPoolList', data)
+      })
+    },
     // 和后台数据接口交互取得客户列表信息
     getClientList (context) {
       Axios.post(this.state.address + '/getClientList')
@@ -110,7 +152,7 @@ let store = new Vuex.Store({
     createNewClient (context, formData) {
       Axios.post(this.state.address + '/createNewClient', formData.formValidate)
       .then((data) => {
-        formData.newRouter.push('/clientUserMain')
+        formData.newRouter.push({name:'clientShow_index'})
       })
     },
     // 和后台数据接口交互取得联系人列表信息

@@ -63,17 +63,17 @@ export default {
             {
                itemName:'CRM信息',
                itemType:'information-circled',
-               itemHref:'CRMShow'
+               itemHref:'crmInfoShow_index'
             },
             {
                itemName:'销售线索',
                itemType:'ios-pricetag-outline',
-               itemHref:'SaleShow'
+               itemHref:'saleThreadShow_index'
             },
             {
                itemName:'线索池',
                itemType:'soup-can-outline',
-               itemHref:'threadShow'
+               itemHref:'threadPoolShow_index'
             },
             {
                itemName:'客户',
@@ -93,13 +93,25 @@ export default {
                itemHref:'salesThreadAnalyze_index'
             }
         ],
-        tabIndex:'01-3',
+        index:localStorage.tabIndex
     }
   },
   methods:{
       changeItemIndex (tab,index){
          this.tabIndex = tab+'-'+index
+         
       }
+  },
+  computed:{
+     tabIndex:{
+         get(){
+             return this.index
+         },
+         set(value){
+            localStorage.tabIndex = value
+            this.index = value
+         }
+     }
   }
 }
 </script>

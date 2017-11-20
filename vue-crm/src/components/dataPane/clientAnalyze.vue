@@ -33,14 +33,12 @@ export default {
         },
         tooltip : {
             trigger: 'axis',
-            axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            axisPointer : { 
+                type : 'shadow' 
             }
         },
-        legend:{
-            left: 'center',
-            top: '8%',  
-            data:[{name:'客户数',icon:'roundRect'},{name:'联系人数',icon:'roundRect'}]
+        legend: {
+            data:['直接访问','邮件营销']
         },
         grid: {
             top:'20%',

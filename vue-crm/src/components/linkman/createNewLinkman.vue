@@ -99,8 +99,7 @@
                                 v-for="(item, index) in formValidate.phoneNum"
                                 :key="index"
                                 :label="'电话' + item.index"
-                                prop="phoneNum"
-                                :rules="{required: true, message: 'Item ' + item.index +' can not be empty', trigger: 'blur'}">
+                                prop="phoneNum">
                                 <Row>
                                     <Col span="18">
                                         <Input type="text" v-model="item.value" placeholder="请输入电话号码"></Input>
@@ -121,8 +120,7 @@
                                 v-for="(item, index) in formValidate.mobilePhoneNum"
                                 :key="index"
                                 :label="'手机' + item.index"
-                                prop="mobilePhoneNum"
-                                :rules="{required: true, message: 'Item ' + item.index +' can not be empty', trigger: 'blur'}">
+                                prop="mobilePhoneNum">
                                 <Row>
                                     <Col span="18">
                                         <Input type="text" v-model="item.value" placeholder="请输入手机号码"></Input>
@@ -308,17 +306,20 @@ export default {
     },
     // 添加联系人
     addLinkmanList (formData) {
-      this.$refs[formData].validate((valid) => {
-        if (valid) {
-          this.$store.dispatch('createNewLinkman', {
-            formValidate: this.formValidate,
-            newRouter: this.$router
-          })
-          this.$Message.success('提交成功!')
-        } else {
-          this.$Message.error('表单验证失败! 请重新输入')
-        }
-      })
+    //   this.$refs[formData].validate((valid) => {
+    //     if (valid) {
+    //       this.$store.dispatch('createNewLinkman', {
+    //         formValidate: this.formValidate,
+    //         newRouter: this.$router
+    //       })
+    //       this.$Message.success('提交成功!')
+    //     } else {
+    //       this.$Message.error('表单验证失败! 请重新输入')
+    //     }
+    //   })
+        this.$router.push({
+            name:'linkmanShow_index'
+        })
     },
     // 点击取消按钮
     goMain () {

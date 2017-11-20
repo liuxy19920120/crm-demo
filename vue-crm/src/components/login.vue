@@ -66,6 +66,7 @@ export default {
           Cookies.set('user',this.formInline.user)
           Cookies.set('password',this.formInline.password)
           this.$router.push('/main/clientShow')
+          localStorage.tabIndex = '01-3'
         } else {
           this.$Message.error('表单验证失败!')
         }
