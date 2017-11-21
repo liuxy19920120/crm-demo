@@ -213,7 +213,7 @@ app.post('/register',function(req,res){
 	 })
 })
 
-// 获取客户列表
+// 获取联系人列表
 app.post('/getLinkmanList',function(req,res){
 	// 判断是否存在数据
 	let isExist = fs.existsSync('./data/linkmanList.json')
@@ -227,6 +227,40 @@ app.post('/getLinkmanList',function(req,res){
 	res.send({
 		code:0,
 		linkmanList:arr
+	})
+})
+
+// 获取线索池列表
+app.post('/getThreadPoolList',function(req,res){
+	// 判断是否存在数据
+	let isExist = fs.existsSync('./data/threadPoolList.json')
+	let arr = []
+	if(isExist){
+		let data = fs.readFileSync('./data/threadPoolList.json')
+		if(data.toString()){
+			arr = JSON.parse(data)
+		}
+	}
+	res.send({
+		code:0,
+		threadPoolList:arr
+	})
+})
+
+// 获取销售线索列表
+app.post('/getSaleThreadList',function(req,res){
+	// 判断是否存在数据
+	let isExist = fs.existsSync('./data/saleThreadList.json')
+	let arr = []
+	if(isExist){
+		let data = fs.readFileSync('./data/saleThreadList.json')
+		if(data.toString()){
+			arr = JSON.parse(data)
+		}
+	}
+	res.send({
+		code:0,
+		saleThreadList:arr
 	})
 })
 

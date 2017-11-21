@@ -45,7 +45,7 @@
                     </Select>
                 </li>
                 <li class="noborder" style="margin-left:10px">
-                    <Button type="dashed">高级筛选</Button>
+                    <Button type="dashed" icon="funnel">高级筛选</Button>
                 </li>
             </ul>
             <ul class="batch-trem clearfix" v-show="!checkFlag">
@@ -112,7 +112,7 @@ export default {
   data () {
       return {
         tableColumns:{  // 所有表头项
-            linmanName:{
+            linkmanName:{
               columnName:'客户名称',
               selectFlag:true
             },
@@ -338,11 +338,11 @@ export default {
           fixed: 'left'
         })
       }
-      if(this.tableColumns.linmanName.selectFlag){                  
+      if(this.tableColumns.linkmanName.selectFlag){                  
         columns.push({
           width: 150,
           title: '客户名称',
-          key: 'linmanName',
+          key: 'linkmanName',
           sortable: true
         }) 
       }

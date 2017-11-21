@@ -61,7 +61,7 @@
                     <Button :class="[{'ivu-btn-primary':!listMapFlag}, 'ivu-btn']" @click="mapShow">地图</Button>
                 </li>
                 <li class="noborder" style="margin-left:10px">
-                    <Button type="dashed">高级筛选</Button>
+                    <Button type="dashed" icon="funnel">高级筛选</Button>
                 </li>
             </ul>
             <ul class="batch-trem clearfix" v-show="!checkFlag">

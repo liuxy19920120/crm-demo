@@ -45,7 +45,7 @@
                     </Select>
                 </li>
                 <li class="noborder" style="margin-left:10px">
-                    <Button type="dashed">高级筛选</Button>
+                    <Button type="dashed" icon="funnel">高级筛选</Button>
                 </li>
             </ul>
             <ul class="batch-trem clearfix" v-show="!checkFlag">
@@ -329,7 +329,7 @@ export default {
       }
        if(this.tableColumns.clientCompany.selectFlag){ // 公司     
         columns.push({ // 客户名称
-          width: 120,
+          width: 150,
           title: '公司',
           key: 'clientCompany',
           sortable: true,
@@ -338,7 +338,7 @@ export default {
        }
       if(this.tableColumns.dutyOfficer.selectFlag){ // 负责人
         columns.push({
-          width: 120,
+          width: 150,
           title: '负责人',
           key: 'dutyOfficer',
           sortable: true,
@@ -364,7 +364,7 @@ export default {
       }
       if(this.tableColumns.saleThreadDetail.selectFlag){ // 销售线索详情     
         columns.push({
-          width: 120,
+          width: 150,
           title: '销售线索详情',
           key: 'saleThreadDetail',
           sortable: true

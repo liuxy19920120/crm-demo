@@ -7,6 +7,7 @@ Vue.use(Vuex)
 let store = new Vuex.Store({
   state: {
     address: 'http://localhost:8888', // 后台接口访问地址
+    crmInfoList:[], // crm客户信息列表
     saleThreadList:[], // 销售线索客户列表
     threadPoolList:[], // 线索池客户列表
     clientList: [], // 客户列表
@@ -73,6 +74,19 @@ let store = new Vuex.Store({
     setSelectedDataList(state,payLoad){
       this.state.selectedDataList = payLoad
     },
+    // 设置crm客户信息列表
+    setCrmInfoList (state, payLoad) {
+      let list = payLoad.data.crmInfoList
+      let newList = []
+      if(list.length){
+        newList = Array.from(list).map(function(item){
+          item.clientStatus = item.clientStatus === '0' ? '已分配':'未分配'
+          item.lockStatus = item.lockStatus === '0' ? '未锁定':'已锁定'
+          return item
+        })
+      }
+      this.state.crmInfoList = newList
+    },
     // 设置销售线索客户列表
     setSaleThreadList (state, payLoad) {
       let list = payLoad.data.saleThreadList
@@ -87,7 +101,7 @@ let store = new Vuex.Store({
       this.state.saleThreadList = newList
     },
     // 设置线索池客户列表
-    setClientList (state, payLoad) {
+    setThreadPoolList (state, payLoad) {
       let list = payLoad.data.threadPoolList
       let newList = []
       if(list.length){
@@ -127,6 +141,13 @@ let store = new Vuex.Store({
     }
   },
   actions: {
+    // 和后台数据接口交互取得销售线索客户列表信息
+    getCrmInfoList (context) {
+      Axios.post(this.state.address + '/getCrmInfoList')
+      .then((data) => {
+        context.commit('setCrmInfoList', data)
+      })
+    },
     // 和后台数据接口交互取得销售线索客户列表信息
     getSaleThreadList (context) {
       Axios.post(this.state.address + '/getSaleThreadList')
